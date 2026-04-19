@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display and Transform XML</title>
+    <script type="text/javascript">
+        function display() {
+            var xmlURL = "outcome3.xml";
+            var xmlstyleURL = "style.xsl";
+
+            var xmlDocument;
+            var xmlStyleSheet;
+
+            try {
+                var request;
+
+                if (window.XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                } else {
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                request.open("GET", xmlURL, false);
+                request.send();
+                xmlDocument = request.responseXML;
+
+                request.open("GET", xmlstyleURL, false);
+                request.send();
+                xmlStyleSheet = request.responseXML;
+
+                if (window.ActiveXObject || "ActiveXObject" in window) {
+                    var transformedXML = xmlDocument.transformNode(xmlStyleSheet);
+                    document.getElementById("output").innerHTML = transformedXML;
+                } else {
+                    var xslProcessor = new XSLTProcessor();
+                    xslProcessor.importStylesheet(xmlStyleSheet);
+                    var fragment = xslProcessor.transformToFragment(xmlDocument, document);
+                    document.getElementById("output").appendChild(fragment);
+                }
+
+            } catch (err) {
+                alert("Your browser cannot handle this script");
+            }
+        }
+    </script>
+</head>
+
+<body onload="display()">
+    <div id="output"></div>
+</body>
+</html>
